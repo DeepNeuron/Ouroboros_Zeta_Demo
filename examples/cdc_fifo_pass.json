@@ -1,0 +1,118 @@
+{
+  "schema_version": "1.0",
+  "aco_id": "aco-cdc-fifo-pass-001",
+  "source": {
+    "system": "HorizonAX",
+    "project_id": "demo-chip-a",
+    "case_id": "cdc-case-demo-fifo",
+    "run_id": "run-R2-repaired"
+  },
+  "subject": {
+    "object_id": "fifo::axi_async_bridge_0",
+    "object_kind": "fifo",
+    "display_name": "axi_async_bridge_0"
+  },
+  "proposed_change": {
+    "change_type": "CDC_FIX",
+    "summary": "Add 2-FF synchronization for wr_en while preserving FIFO full gating",
+    "files": ["rtl/axi_async_bridge.sv"],
+    "change_fingerprint": "sha256:demo-cdc-fifo-pass-change"
+  },
+  "stated_objective": {
+    "objective_id": "obj-cdc-fifo-safe-write-control",
+    "summary": "Remove the unsynchronized write-enable crossing without regressing FIFO safety or data integrity"
+  },
+  "acceptance_criteria": [
+    {
+      "criterion_id": "ac-cdc-01",
+      "type": "CDC_STRUCTURE",
+      "required": true,
+      "target": "wr_en",
+      "expected": "SYNCHRONIZED",
+      "status": "SATISFIED"
+    },
+    {
+      "criterion_id": "ac-fifo-01",
+      "type": "PROPERTY_STATUS",
+      "required": true,
+      "property_id": "fifo_no_overflow",
+      "expected": "PROPERTY_HOLDS",
+      "status": "SATISFIED"
+    },
+    {
+      "criterion_id": "ac-fifo-02",
+      "type": "PROPERTY_SET",
+      "required": true,
+      "property_ids": ["fifo_ordering", "fifo_no_duplication", "fifo_no_data_loss"],
+      "expected": "NO_NEW_VIOLATIONS",
+      "status": "SATISFIED"
+    },
+    {
+      "criterion_id": "ac-regression-01",
+      "type": "MAX_FINDING_COUNT",
+      "required": true,
+      "severity": "HIGH",
+      "maximum": 0,
+      "scope": "changed_object",
+      "status": "SATISFIED"
+    },
+    {
+      "criterion_id": "ac-evidence-01",
+      "type": "EVIDENCE_FRESHNESS",
+      "required": true,
+      "expected": "CURRENT",
+      "status": "SATISFIED"
+    }
+  ],
+  "acceptance_status": "SATISFIED",
+  "evidence": [
+    {
+      "evidence_id": "c4-vr-fifo-overflow-pass",
+      "kind": "verification_result",
+      "status": "PROPERTY_HOLDS",
+      "freshness": "CURRENT",
+      "fingerprint": "sha256:demo-fifo-overflow-pass",
+      "uri": "horizonax://cases/cdc-case-demo-fifo/runs/run-R2-repaired/evidence/c4-vr-fifo-overflow-pass"
+    },
+    {
+      "evidence_id": "cdc-structure-pass",
+      "kind": "cdc_structure_assessment",
+      "status": "SYNCHRONIZED",
+      "freshness": "CURRENT",
+      "fingerprint": "sha256:demo-cdc-structure-pass",
+      "uri": "horizonax://cases/cdc-case-demo-fifo/runs/run-R2-repaired/evidence/cdc-structure-pass"
+    }
+  ],
+  "horizonax_assurance": {
+    "summary": "CDC synchronization repaired and required FIFO safety/integrity checks satisfied on the repaired run",
+    "checks": [
+      {"check": "cdc_wr_en_synchronized", "status": "PASS"},
+      {"check": "fifo_no_overflow", "status": "PROPERTY_HOLDS"},
+      {"check": "fifo_integrity_regression", "status": "PASS"},
+      {"check": "new_high_severity_findings", "status": "PASS"}
+    ]
+  },
+  "clear_review": {
+    "required": true,
+    "decision_id": "clear-dec-demo-pass-001",
+    "disposition": "APPROVED",
+    "reason_codes": ["REQUIRED_EVIDENCE_SATISFIED"]
+  },
+  "atlas_dispute": {
+    "required": false,
+    "status": "NONE",
+    "resolution_id": null,
+    "resolution": null
+  },
+  "execution_gate": {
+    "actor": "KRISHNA",
+    "disposition": "PASS",
+    "reason_codes": ["CLEAR_APPROVED", "REQUIRED_EVIDENCE_CURRENT", "ACCEPTANCE_CRITERIA_SATISFIED"],
+    "authorization_id": "krishna-auth-demo-001"
+  },
+  "zeta_transition": {
+    "from_state": "KRISHNA_GATE",
+    "to_state": "AUTHORIZED",
+    "record_status": "RECORDED"
+  }
+}
