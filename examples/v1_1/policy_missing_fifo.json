@@ -1,0 +1,167 @@
+{
+  "schema_version": "1.1",
+  "aco_id": "ACO-3102",
+  "revision": 2,
+  "source": {
+    "system": "HorizonAX",
+    "project_id": "demo-chip-a",
+    "case_id": "cdc-case-policy-demo",
+    "run_id": "run-policy-partial"
+  },
+  "source_binding": {
+    "repository": "demo://chip-a/rtl",
+    "branch": "feature/async-fifo-partial",
+    "commit_sha": "ccc3333partial03",
+    "rtl_fingerprint": "sha256:demo-rtl-partial",
+    "sdc_fingerprint": "sha256:demo-sdc-partial",
+    "requirements_fingerprint": "sha256:demo-req-partial",
+    "checker_config_fingerprint": "sha256:demo-cfg-partial"
+  },
+  "subject": {
+    "object_id": "fifo::axi_async_bridge_0",
+    "object_kind": "fifo",
+    "display_name": "axi_async_bridge_0"
+  },
+  "change_class": "ASYNC_FIFO_MODIFICATION",
+  "required_assurance_classes": ["CDC", "FIFO_SAFETY", "FIFO_ORDERING", "TIMING"],
+  "proposed_change": {
+    "change_type": "CDC_FIX",
+    "summary": "Partial assurance package: HorizonAX returned CDC + TIMING only; FIFO classes absent",
+    "files": ["rtl/axi_async_bridge.sv"],
+    "change_fingerprint": "sha256:demo-aco3102-rev2"
+  },
+  "stated_objective": {
+    "objective_id": "obj-cdc-fifo-safe-write-control",
+    "summary": "CDC repair must not omit required FIFO assurance classes"
+  },
+  "acceptance_criteria": [
+    {
+      "criterion_id": "ac-cdc-01",
+      "type": "CDC_STRUCTURE",
+      "required": true,
+      "status": "SATISFIED"
+    },
+    {
+      "criterion_id": "ac-timing-01",
+      "type": "TIMING",
+      "required": true,
+      "status": "SATISFIED"
+    },
+    {
+      "criterion_id": "ac-fifo-01",
+      "type": "PROPERTY_STATUS",
+      "required": true,
+      "property_id": "fifo_no_overflow",
+      "status": "NOT_EVALUATED"
+    },
+    {
+      "criterion_id": "ac-fifo-02",
+      "type": "PROPERTY_SET",
+      "required": true,
+      "property_ids": ["fifo_ordering"],
+      "status": "NOT_EVALUATED"
+    }
+  ],
+  "acceptance_status": "PARTIAL",
+  "evidence": [
+    {
+      "evidence_id": "ev-cdc-partial",
+      "kind": "cdc_structure_assessment",
+      "status": "SYNCHRONIZED",
+      "freshness": "CURRENT",
+      "fingerprint": "sha256:demo-cdc-partial",
+      "uri": "horizonax://demo/ACO-3102/rev2/cdc",
+      "bound_commit_sha": "ccc3333partial03"
+    },
+    {
+      "evidence_id": "ev-timing-partial",
+      "kind": "timing_check",
+      "status": "PASS",
+      "freshness": "CURRENT",
+      "fingerprint": "sha256:demo-timing-partial",
+      "uri": "horizonax://demo/ACO-3102/rev2/timing",
+      "bound_commit_sha": "ccc3333partial03"
+    }
+  ],
+  "horizonax_assurance": {
+    "summary": "HorizonAX provided CDC and TIMING only; FIFO assurance classes were not returned",
+    "status": "INCOMPLETE",
+    "producer": "HORIZONAX",
+    "bound_commit_sha": "ccc3333partial03",
+    "assurance_classes_present": ["CDC", "TIMING"],
+    "checks": [
+      {"check": "cdc_wr_en_synchronized", "class": "CDC", "status": "PASS"},
+      {"check": "timing", "class": "TIMING", "status": "PASS"}
+    ]
+  },
+  "clear_review": {
+    "required": true,
+    "decision_id": "clear-ACO-3102-rev2",
+    "disposition": "CHANGES_REQUIRED",
+    "reason_codes": ["MISSING_REQUIRED_ASSURANCE_CLASS", "POLICY_CLASSES_INCOMPLETE"],
+    "producer": "CLEAR"
+  },
+  "atlas_dispute": {
+    "required": false,
+    "status": "NONE",
+    "resolution_id": null,
+    "resolution": null,
+    "producer": "ATLAS",
+    "disputed_claim": null,
+    "requester_position": null,
+    "evidence_refs": [],
+    "rationale": null,
+    "authority": null,
+    "conditions": null
+  },
+  "execution_gate": {
+    "actor": "KRISHNA",
+    "disposition": "HOLD",
+    "reason_codes": ["MISSING_REQUIRED_ASSURANCE_CLASS", "ACCEPTANCE_CRITERIA_NOT_SATISFIED"],
+    "authorization_id": null,
+    "producer": "KRISHNA",
+    "bound_commit_sha": "ccc3333partial03"
+  },
+  "zeta_transition": {
+    "from_state": "CLEAR_REVIEW",
+    "to_state": "CHANGES_REQUIRED",
+    "record_status": "RECORDED",
+    "producer": "ZETA"
+  },
+  "ownership": {
+    "proposed_change": "ORIGINATOR",
+    "horizonax_assurance": "HORIZONAX",
+    "clear_review": "CLEAR",
+    "atlas_dispute": "ATLAS",
+    "execution_gate": "KRISHNA",
+    "lifecycle": "ZETA"
+  },
+  "lifecycle_state": "CHANGES_REQUIRED",
+  "transition_history": [
+    {
+      "from_state": "SUBMITTED",
+      "to_state": "ASSURANCE_READY",
+      "record_status": "RECORDED",
+      "at_revision": 2,
+      "commit_sha": "ccc3333partial03",
+      "note": "Partial HorizonAX package received",
+      "producer": "ZETA"
+    },
+    {
+      "from_state": "CLEAR_REVIEW",
+      "to_state": "CHANGES_REQUIRED",
+      "record_status": "RECORDED",
+      "at_revision": 2,
+      "commit_sha": "ccc3333partial03",
+      "note": "CLEAR policy detected missing FIFO_SAFETY and FIFO_ORDERING classes",
+      "producer": "ZETA"
+    }
+  ],
+  "merge_gate": {
+    "aco_id": "ACO-3102",
+    "revision": 2,
+    "commit_sha": "ccc3333partial03",
+    "gate_status": "HOLD",
+    "reason_codes": ["MISSING_REQUIRED_ASSURANCE_CLASS", "MERGE_BLOCKED"]
+  }
+}

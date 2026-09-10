@@ -1,0 +1,112 @@
+{
+  "schema_version": "1.0",
+  "aco_id": "aco-area-hold-001",
+  "source": {
+    "system": "HorizonAX",
+    "project_id": "demo-chip-a",
+    "case_id": "design-case-area-demo",
+    "run_id": "run-area-candidate-01"
+  },
+  "subject": {
+    "object_id": "rtl::toy_adder_8b",
+    "object_kind": "rtl_block",
+    "display_name": "toy_adder_8b"
+  },
+  "proposed_change": {
+    "change_type": "AREA_OPTIMIZATION",
+    "summary": "Use smaller adder cells to reduce modeled area from 100 to 75 while preserving arithmetic and timing",
+    "files": ["rtl/toy_adder_8b.sv"],
+    "change_fingerprint": "sha256:demo-area-change"
+  },
+  "stated_objective": {
+    "objective_id": "obj-area-reduction-001",
+    "summary": "Preserve arithmetic correctness and required timing while reducing modeled area to <= 70",
+    "metrics": [
+      {"metric": "toy_area", "operator": "<=", "target": 70, "baseline": 100}
+    ]
+  },
+  "acceptance_criteria": [
+    {
+      "criterion_id": "ac-arith-01",
+      "type": "FUNCTIONAL_CORRECTNESS",
+      "required": true,
+      "expected": "PASS",
+      "status": "SATISFIED"
+    },
+    {
+      "criterion_id": "ac-timing-01",
+      "type": "TIMING",
+      "required": true,
+      "expected": "PASS",
+      "status": "SATISFIED"
+    },
+    {
+      "criterion_id": "ac-area-01",
+      "type": "OBJECTIVE_THRESHOLD",
+      "required": true,
+      "metric": "toy_area",
+      "operator": "<=",
+      "target": 70,
+      "observed": 75,
+      "status": "NOT_SATISFIED"
+    }
+  ],
+  "acceptance_status": "NOT_SATISFIED",
+  "evidence": [
+    {
+      "evidence_id": "arith-pass-001",
+      "kind": "functional_check",
+      "status": "PASS",
+      "freshness": "CURRENT",
+      "fingerprint": "sha256:demo-arith-pass",
+      "uri": "horizonax://demo/cases/design-case-area-demo/runs/run-area-candidate-01/evidence/arith-pass-001"
+    },
+    {
+      "evidence_id": "timing-pass-001",
+      "kind": "timing_check",
+      "status": "PASS",
+      "freshness": "CURRENT",
+      "fingerprint": "sha256:demo-timing-pass",
+      "uri": "horizonax://demo/cases/design-case-area-demo/runs/run-area-candidate-01/evidence/timing-pass-001"
+    },
+    {
+      "evidence_id": "area-result-001",
+      "kind": "objective_measurement",
+      "status": "toy_area=75",
+      "freshness": "CURRENT",
+      "fingerprint": "sha256:demo-area-result",
+      "uri": "horizonax://demo/cases/design-case-area-demo/runs/run-area-candidate-01/evidence/area-result-001"
+    }
+  ],
+  "horizonax_assurance": {
+    "summary": "Arithmetic correctness and timing are satisfied, but the required modeled-area objective (<= 70) is not met at observed toy_area=75",
+    "checks": [
+      {"check": "arithmetic_correctness", "status": "PASS"},
+      {"check": "timing", "status": "PASS"},
+      {"check": "toy_area<=70", "status": "FAIL", "observed": 75, "baseline": 100}
+    ]
+  },
+  "clear_review": {
+    "required": true,
+    "decision_id": "clear-dec-area-hold-001",
+    "disposition": "CHANGES_REQUIRED",
+    "reason_codes": ["REQUIRED_OBJECTIVE_NOT_MET"]
+  },
+  "atlas_dispute": {
+    "required": false,
+    "status": "NONE",
+    "resolution_id": null,
+    "resolution": null
+  },
+  "execution_gate": {
+    "actor": "KRISHNA",
+    "disposition": "HOLD",
+    "reason_codes": ["REQUIRED_OBJECTIVE_NOT_MET", "ACCEPTANCE_CRITERIA_NOT_SATISFIED"],
+    "authorization_id": null
+  },
+  "zeta_transition": {
+    "from_state": "KRISHNA_GATE",
+    "to_state": "HOLD",
+    "record_status": "RECORDED"
+  }
+}

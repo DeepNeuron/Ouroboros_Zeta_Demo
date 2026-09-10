@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://demo.horizonax.invalid/schema/aco_exchange_v1.schema.json",
+  "title": "HorizonAX-Zeta ACO Exchange v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "aco_id",
+    "source",
+    "subject",
+    "proposed_change",
+    "stated_objective",
+    "acceptance_criteria",
+    "acceptance_status",
+    "evidence",
+    "horizonax_assurance",
+    "clear_review",
+    "atlas_dispute",
+    "execution_gate",
+    "zeta_transition"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "aco_id": {"type": "string", "minLength": 1},
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["system", "project_id", "case_id", "run_id"],
+      "properties": {
+        "system": {"const": "HorizonAX"},
+        "project_id": {"type": "string"},
+        "case_id": {"type": "string"},
+        "run_id": {"type": "string"}
+      }
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["object_id", "object_kind", "display_name"],
+      "properties": {
+        "object_id": {"type": "string"},
+        "object_kind": {"type": "string"},
+        "display_name": {"type": "string"}
+      }
+    },
+    "proposed_change": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["change_type", "summary", "change_fingerprint"],
+      "properties": {
+        "change_type": {"type": "string"},
+        "summary": {"type": "string"},
+        "files": {"type": "array", "items": {"type": "string"}},
+        "change_fingerprint": {"type": "string"}
+      }
+    },
+    "stated_objective": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["objective_id", "summary"],
+      "properties": {
+        "objective_id": {"type": "string"},
+        "summary": {"type": "string"},
+        "metrics": {"type": "array", "items": {"type": "object"}}
+      }
+    },
+    "acceptance_criteria": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["criterion_id", "type", "required", "status"],
+        "properties": {
+          "criterion_id": {"type": "string"},
+          "type": {"type": "string"},
+          "required": {"type": "boolean"},
+          "status": {"enum": ["SATISFIED", "NOT_SATISFIED", "NOT_EVALUATED", "BLOCKED"]}
+        }
+      }
+    },
+    "acceptance_status": {"enum": ["SATISFIED", "NOT_SATISFIED", "PARTIAL", "BLOCKED"]},
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["evidence_id", "kind", "status", "freshness", "fingerprint", "uri"],
+        "properties": {
+          "evidence_id": {"type": "string"},
+          "kind": {"type": "string"},
+          "status": {"type": "string"},
+          "freshness": {"enum": ["CURRENT", "STALE", "UNKNOWN"]},
+          "fingerprint": {"type": "string"},
+          "uri": {"type": "string"}
+        }
+      }
+    },
+    "horizonax_assurance": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["summary", "checks"],
+      "properties": {
+        "summary": {"type": "string"},
+        "checks": {"type": "array", "items": {"type": "object"}}
+      }
+    },
+    "clear_review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "disposition"],
+      "properties": {
+        "required": {"type": "boolean"},
+        "decision_id": {"type": ["string", "null"]},
+        "disposition": {"enum": ["NOT_RUN", "APPROVED", "CHANGES_REQUIRED", "REJECTED", "CONDITIONAL"]},
+        "reason_codes": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "atlas_dispute": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "status"],
+      "properties": {
+        "required": {"type": "boolean"},
+        "status": {"enum": ["NONE", "OPEN", "RESOLVED"]},
+        "resolution_id": {"type": ["string", "null"]},
+        "resolution": {"type": ["string", "null"]}
+      }
+    },
+    "execution_gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actor", "disposition", "reason_codes"],
+      "properties": {
+        "actor": {"const": "KRISHNA"},
+        "disposition": {"enum": ["PASS", "HOLD", "DENY", "NOT_RUN"]},
+        "reason_codes": {"type": "array", "items": {"type": "string"}},
+        "authorization_id": {"type": ["string", "null"]}
+      }
+    },
+    "zeta_transition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["from_state", "to_state", "record_status"],
+      "properties": {
+        "from_state": {"type": "string"},
+        "to_state": {"type": "string"},
+        "record_status": {"enum": ["RECORDED", "PENDING"]}
+      }
+    }
+  }
+}
