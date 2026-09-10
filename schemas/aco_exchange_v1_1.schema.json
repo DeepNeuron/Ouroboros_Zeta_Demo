@@ -1,0 +1,303 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://demo.horizonax.invalid/schema/aco_exchange_v1_1.schema.json",
+  "title": "HorizonAX-Zeta ACO Exchange v1.1",
+  "description": "Demo interoperability contract. Additive evolution of v1.0: durable ACO identity + revision, exact source binding, participant ownership, append-oriented transition history, and CI merge-gate projection. Semantic patch (still schema_version 1.1): evidence/check vocabularies, commit-bound release for v1.1, preserved OPEN disputes, numeric OBJECTIVE_THRESHOLD evaluation, and merge_gate derived only from current computed state. Not a production API. Cross-record rules are enforced in Python, not by JSON Schema alone.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "aco_id",
+    "revision",
+    "source",
+    "source_binding",
+    "subject",
+    "proposed_change",
+    "stated_objective",
+    "acceptance_criteria",
+    "acceptance_status",
+    "evidence",
+    "horizonax_assurance",
+    "clear_review",
+    "atlas_dispute",
+    "execution_gate",
+    "zeta_transition",
+    "ownership",
+    "lifecycle_state",
+    "transition_history",
+    "merge_gate"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.1"},
+    "aco_id": {"type": "string", "minLength": 1},
+    "revision": {"type": "integer", "minimum": 1},
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["system", "project_id", "case_id", "run_id"],
+      "properties": {
+        "system": {"const": "HorizonAX"},
+        "project_id": {"type": "string"},
+        "case_id": {"type": "string"},
+        "run_id": {"type": "string"}
+      }
+    },
+    "source_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "branch", "commit_sha"],
+      "properties": {
+        "repository": {"type": "string"},
+        "branch": {"type": "string"},
+        "commit_sha": {"type": "string", "minLength": 7},
+        "rtl_fingerprint": {"type": "string"},
+        "sdc_fingerprint": {"type": "string"},
+        "requirements_fingerprint": {"type": "string"},
+        "checker_config_fingerprint": {"type": "string"}
+      }
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["object_id", "object_kind", "display_name"],
+      "properties": {
+        "object_id": {"type": "string"},
+        "object_kind": {"type": "string"},
+        "display_name": {"type": "string"}
+      }
+    },
+    "change_class": {"type": "string"},
+    "required_assurance_classes": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "proposed_change": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["change_type", "summary", "change_fingerprint"],
+      "properties": {
+        "change_type": {"type": "string"},
+        "summary": {"type": "string"},
+        "files": {"type": "array", "items": {"type": "string"}},
+        "change_fingerprint": {"type": "string"}
+      }
+    },
+    "stated_objective": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["objective_id", "summary"],
+      "properties": {
+        "objective_id": {"type": "string"},
+        "summary": {"type": "string"},
+        "metrics": {"type": "array", "items": {"type": "object"}}
+      }
+    },
+    "acceptance_criteria": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["criterion_id", "type", "required", "status"],
+        "properties": {
+          "criterion_id": {"type": "string"},
+          "type": {"type": "string"},
+          "required": {"type": "boolean"},
+          "status": {"enum": ["SATISFIED", "NOT_SATISFIED", "NOT_EVALUATED", "BLOCKED"]}
+        }
+      }
+    },
+    "acceptance_status": {"enum": ["SATISFIED", "NOT_SATISFIED", "PARTIAL", "BLOCKED"]},
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["evidence_id", "kind", "status", "freshness", "fingerprint", "uri"],
+        "properties": {
+          "evidence_id": {"type": "string"},
+          "kind": {"type": "string"},
+          "status": {"type": "string"},
+          "freshness": {
+            "description": "Release-authorizing evidence must be CURRENT. UNKNOWN/missing/null is incomplete (HOLD). STALE remains distinct.",
+            "enum": ["CURRENT", "STALE", "UNKNOWN"]
+          },
+          "fingerprint": {"type": "string"},
+          "uri": {"type": "string"},
+          "bound_commit_sha": {
+            "type": "string",
+            "description": "Required for v1.1 evidence used toward release; must match source_binding.commit_sha. Toy fingerprints are illustrative only."
+          }
+        }
+      }
+    },
+    "horizonax_assurance": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["summary", "checks", "status", "producer", "bound_commit_sha"],
+      "properties": {
+        "summary": {"type": "string"},
+        "checks": {"type": "array", "items": {"type": "object"}},
+        "status": {
+          "enum": ["PASS", "FAIL", "INCOMPLETE", "STALE", "REANALYSIS_REQUIRED"],
+          "description": "Final effective assurance status used by CLEAR/KRISHNA/merge_gate."
+        },
+        "declared_status": {
+          "enum": ["PASS", "FAIL", "INCOMPLETE", "STALE", "REANALYSIS_REQUIRED", null],
+          "description": "Producer-submitted assurance status (may disagree with evidence-derived assessment)."
+        },
+        "derived_status": {
+          "enum": ["PASS", "FAIL", "INCOMPLETE", "STALE", "REANALYSIS_REQUIRED"],
+          "description": "Assessment derived from evidence/checks/criteria before applying declared adverse status."
+        },
+        "submitted_status": {
+          "description": "Compatibility alias for the producer-submitted assurance label."
+        },
+        "producer": {"const": "HORIZONAX"},
+        "bound_commit_sha": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Required for v1.1 release evaluation; must match source_binding.commit_sha or assurance is STALE."
+        },
+        "assurance_classes_present": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "clear_review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "disposition", "producer"],
+      "properties": {
+        "required": {"type": "boolean"},
+        "decision_id": {"type": ["string", "null"]},
+        "disposition": {
+          "enum": ["NOT_RUN", "APPROVED", "CHANGES_REQUIRED", "REJECTED", "CONDITIONAL"]
+        },
+        "reason_codes": {"type": "array", "items": {"type": "string"}},
+        "producer": {"const": "CLEAR"}
+      }
+    },
+    "atlas_dispute": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "status", "producer"],
+      "properties": {
+        "required": {"type": "boolean"},
+        "status": {"enum": ["NONE", "OPEN", "RESOLVED"]},
+        "resolution_id": {"type": ["string", "null"]},
+        "resolution": {"type": ["string", "null"]},
+        "producer": {"const": "ATLAS"},
+        "resolution_disposition": {
+          "description": "Structured ATLAS outcome. RESOLVED alone never authorizes. Only ALLOW_EXECUTION may continue past a dispute; REJECT/UPHOLD_HOLD/CHANGES_REQUIRED block. Ambiguous/missing disposition does not waive adverse evidence.",
+          "enum": ["ALLOW_EXECUTION", "REJECT", "UPHOLD_HOLD", "CHANGES_REQUIRED", null]
+        },
+        "disputed_claim": {"type": ["string", "null"]},
+        "requester_position": {"type": ["string", "null"]},
+        "evidence_refs": {"type": "array", "items": {"type": "string"}},
+        "rationale": {"type": ["string", "null"]},
+        "authority": {"type": ["string", "null"]},
+        "conditions": {"type": ["string", "null"]}
+      }
+    },
+    "execution_gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actor", "disposition", "reason_codes", "producer"],
+      "properties": {
+        "actor": {"const": "KRISHNA"},
+        "disposition": {"enum": ["PASS", "HOLD", "DENY", "NOT_RUN"]},
+        "reason_codes": {"type": "array", "items": {"type": "string"}},
+        "authorization_id": {"type": ["string", "null"]},
+        "producer": {"const": "KRISHNA"},
+        "bound_commit_sha": {"type": ["string", "null"]}
+      }
+    },
+    "zeta_transition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["from_state", "to_state", "record_status", "producer"],
+      "properties": {
+        "from_state": {"type": "string"},
+        "to_state": {"type": "string"},
+        "record_status": {"enum": ["RECORDED", "PENDING"]},
+        "producer": {"const": "ZETA"}
+      }
+    },
+    "ownership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "proposed_change",
+        "horizonax_assurance",
+        "clear_review",
+        "atlas_dispute",
+        "execution_gate",
+        "lifecycle"
+      ],
+      "properties": {
+        "proposed_change": {"const": "ORIGINATOR"},
+        "horizonax_assurance": {"const": "HORIZONAX"},
+        "clear_review": {"const": "CLEAR"},
+        "atlas_dispute": {"const": "ATLAS"},
+        "execution_gate": {"const": "KRISHNA"},
+        "lifecycle": {"const": "ZETA"}
+      }
+    },
+    "lifecycle_state": {
+      "type": "string",
+      "enum": [
+        "DRAFT",
+        "SUBMITTED",
+        "ANALYSIS_PENDING",
+        "ANALYSIS_RUNNING",
+        "ASSURANCE_READY",
+        "CLEAR_REVIEW",
+        "CHANGES_REQUIRED",
+        "DISPUTED",
+        "GATE_PENDING",
+        "MERGE_AUTHORIZED",
+        "MERGED",
+        "POST_MERGE_VALIDATION",
+        "CLOSED",
+        "REJECTED",
+        "WITHDRAWN",
+        "SUPERSEDED",
+        "EXPIRED",
+        "CLOSED_WITHOUT_EXECUTION",
+        "HOLD"
+      ]
+    },
+    "transition_history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["from_state", "to_state", "record_status", "at_revision", "producer"],
+        "properties": {
+          "from_state": {"type": "string"},
+          "to_state": {"type": "string"},
+          "record_status": {"enum": ["RECORDED", "PENDING"]},
+          "at_revision": {"type": "integer"},
+          "commit_sha": {"type": ["string", "null"]},
+          "note": {"type": "string"},
+          "producer": {"const": "ZETA"}
+        }
+      }
+    },
+    "merge_gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["aco_id", "revision", "commit_sha", "gate_status", "reason_codes"],
+      "properties": {
+        "aco_id": {"type": "string"},
+        "revision": {"type": "integer"},
+        "commit_sha": {"type": "string"},
+        "gate_status": {
+          "enum": ["PENDING", "PASS", "HOLD", "DENY", "STALE"]
+        },
+        "reason_codes": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}

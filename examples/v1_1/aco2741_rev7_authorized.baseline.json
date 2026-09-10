@@ -1,0 +1,178 @@
+{
+  "schema_version": "1.1",
+  "aco_id": "ACO-2741",
+  "revision": 7,
+  "source": {
+    "system": "HorizonAX",
+    "project_id": "demo-chip-a",
+    "case_id": "cdc-case-demo-fifo",
+    "run_id": "run-R7-commit-a"
+  },
+  "source_binding": {
+    "repository": "demo://chip-a/rtl",
+    "branch": "feature/async-fifo-repair",
+    "commit_sha": "aaa1111deadbeef01",
+    "rtl_fingerprint": "sha256:demo-rtl-commit-a",
+    "sdc_fingerprint": "sha256:demo-sdc-commit-a",
+    "requirements_fingerprint": "sha256:demo-req-commit-a",
+    "checker_config_fingerprint": "sha256:demo-cfg-commit-a"
+  },
+  "subject": {
+    "object_id": "fifo::axi_async_bridge_0",
+    "object_kind": "fifo",
+    "display_name": "axi_async_bridge_0"
+  },
+  "change_class": "ASYNC_FIFO_MODIFICATION",
+  "required_assurance_classes": ["CDC", "FIFO_SAFETY", "FIFO_ORDERING", "TIMING"],
+  "proposed_change": {
+    "change_type": "CDC_FIX",
+    "summary": "Add 2-FF synchronization for wr_en while preserving FIFO full gating (commit A)",
+    "files": ["rtl/axi_async_bridge.sv"],
+    "change_fingerprint": "sha256:demo-aco2741-rev7"
+  },
+  "stated_objective": {
+    "objective_id": "obj-cdc-fifo-safe-write-control",
+    "summary": "Remove the unsynchronized write-enable crossing without regressing FIFO safety"
+  },
+  "acceptance_criteria": [
+    {
+      "criterion_id": "ac-cdc-01",
+      "type": "CDC_STRUCTURE",
+      "required": true,
+      "status": "SATISFIED"
+    },
+    {
+      "criterion_id": "ac-fifo-01",
+      "type": "PROPERTY_STATUS",
+      "required": true,
+      "property_id": "fifo_no_overflow",
+      "status": "SATISFIED"
+    },
+    {
+      "criterion_id": "ac-fifo-02",
+      "type": "PROPERTY_SET",
+      "required": true,
+      "property_ids": ["fifo_ordering"],
+      "status": "SATISFIED"
+    },
+    {
+      "criterion_id": "ac-timing-01",
+      "type": "TIMING",
+      "required": true,
+      "status": "SATISFIED"
+    }
+  ],
+  "acceptance_status": "SATISFIED",
+  "evidence": [
+    {
+      "evidence_id": "ev-cdc-rev7",
+      "kind": "cdc_structure_assessment",
+      "status": "SYNCHRONIZED",
+      "freshness": "CURRENT",
+      "fingerprint": "sha256:demo-cdc-rev7",
+      "uri": "horizonax://demo/ACO-2741/rev7/cdc",
+      "bound_commit_sha": "aaa1111deadbeef01"
+    },
+    {
+      "evidence_id": "ev-fifo-rev7",
+      "kind": "verification_result",
+      "status": "PROPERTY_HOLDS",
+      "freshness": "CURRENT",
+      "fingerprint": "sha256:demo-fifo-rev7",
+      "uri": "horizonax://demo/ACO-2741/rev7/fifo",
+      "bound_commit_sha": "aaa1111deadbeef01"
+    }
+  ],
+  "horizonax_assurance": {
+    "summary": "Required CDC/FIFO/TIMING assurance complete for commit A",
+    "status": "PASS",
+    "producer": "HORIZONAX",
+    "bound_commit_sha": "aaa1111deadbeef01",
+    "assurance_classes_present": ["CDC", "FIFO_SAFETY", "FIFO_ORDERING", "TIMING"],
+    "checks": [
+      {"check": "cdc_wr_en_synchronized", "class": "CDC", "status": "PASS"},
+      {"check": "fifo_no_overflow", "class": "FIFO_SAFETY", "status": "PROPERTY_HOLDS"},
+      {"check": "fifo_ordering", "class": "FIFO_ORDERING", "status": "PASS"},
+      {"check": "timing", "class": "TIMING", "status": "PASS"}
+    ]
+  },
+  "clear_review": {
+    "required": true,
+    "decision_id": "clear-ACO-2741-rev7",
+    "disposition": "APPROVED",
+    "reason_codes": ["REQUIRED_EVIDENCE_SATISFIED", "SOURCE_BINDING_CURRENT", "POLICY_CLASSES_COMPLETE"],
+    "producer": "CLEAR"
+  },
+  "atlas_dispute": {
+    "required": false,
+    "status": "NONE",
+    "resolution_id": null,
+    "resolution": null,
+    "producer": "ATLAS",
+    "disputed_claim": null,
+    "requester_position": null,
+    "evidence_refs": [],
+    "rationale": null,
+    "authority": null,
+    "conditions": null
+  },
+  "execution_gate": {
+    "actor": "KRISHNA",
+    "disposition": "PASS",
+    "reason_codes": ["CLEAR_APPROVED", "REQUIRED_EVIDENCE_CURRENT", "ACCEPTANCE_CRITERIA_SATISFIED", "SOURCE_BINDING_CURRENT"],
+    "authorization_id": "krishna-ACO-2741-rev7",
+    "producer": "KRISHNA",
+    "bound_commit_sha": "aaa1111deadbeef01"
+  },
+  "zeta_transition": {
+    "from_state": "GATE_PENDING",
+    "to_state": "MERGE_AUTHORIZED",
+    "record_status": "RECORDED",
+    "producer": "ZETA"
+  },
+  "ownership": {
+    "proposed_change": "ORIGINATOR",
+    "horizonax_assurance": "HORIZONAX",
+    "clear_review": "CLEAR",
+    "atlas_dispute": "ATLAS",
+    "execution_gate": "KRISHNA",
+    "lifecycle": "ZETA"
+  },
+  "lifecycle_state": "MERGE_AUTHORIZED",
+  "transition_history": [
+    {
+      "from_state": "DRAFT",
+      "to_state": "SUBMITTED",
+      "record_status": "RECORDED",
+      "at_revision": 1,
+      "commit_sha": "aaa1111deadbeef01",
+      "note": "Originator opened ACO-2741",
+      "producer": "ZETA"
+    },
+    {
+      "from_state": "ASSURANCE_READY",
+      "to_state": "CLEAR_REVIEW",
+      "record_status": "RECORDED",
+      "at_revision": 7,
+      "commit_sha": "aaa1111deadbeef01",
+      "note": "HorizonAX assurance complete for commit A",
+      "producer": "ZETA"
+    },
+    {
+      "from_state": "GATE_PENDING",
+      "to_state": "MERGE_AUTHORIZED",
+      "record_status": "RECORDED",
+      "at_revision": 7,
+      "commit_sha": "aaa1111deadbeef01",
+      "note": "KRISHNA PASS for commit A only",
+      "producer": "ZETA"
+    }
+  ],
+  "merge_gate": {
+    "aco_id": "ACO-2741",
+    "revision": 7,
+    "commit_sha": "aaa1111deadbeef01",
+    "gate_status": "PASS",
+    "reason_codes": ["MERGE_AUTHORIZED"]
+  }
+}
